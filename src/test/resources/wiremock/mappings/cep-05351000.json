@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/cep/05351000"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "cep": "05351000",
+      "streetName": "Avenida Doutor Cândido Motta Filho",
+      "district": "Cidade São Francisco",
+      "uf": "SP"
+    }
+  }
+}
