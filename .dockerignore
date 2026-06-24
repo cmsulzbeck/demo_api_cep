@@ -1,0 +1,10 @@
+.git
+.idea
+target
+data
+*.log
+*.iml
+Dockerfile
+compose*.yaml
+infra
+docs

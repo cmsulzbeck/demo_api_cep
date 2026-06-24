@@ -1,0 +1,10 @@
+aws_region = "us-east-1"
+
+api_image = "your-dockerhub-user/api-cep:qa"
+
+# Restrict this to your IP in real environments.
+allowed_http_cidrs = ["0.0.0.0/0"]
+
+# Prefer SSM. Set this only if you need SSH access.
+allowed_ssh_cidrs = []
+key_name          = null

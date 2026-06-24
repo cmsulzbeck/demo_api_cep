@@ -1,0 +1,41 @@
+services:
+  database:
+    image: ${HSQLDB_IMAGE:-maven:3.9.9-eclipse-temurin-17}
+    restart: unless-stopped
+    command: >
+      sh -c "mvn -q dependency:copy
+      -Dartifact=org.hsqldb:hsqldb:2.7.3
+      -DoutputDirectory=/tmp/hsqldb
+      && java -cp /tmp/hsqldb/hsqldb-2.7.3.jar
+      org.hsqldb.server.Server
+      --address 0.0.0.0
+      --database.0 file:/data/demo-db
+      --dbname.0 demo"
+    ports:
+      - "9001:9001"
+    volumes:
+      - hsqldb-data:/data
+
+  wiremock:
+    image: ${WIREMOCK_IMAGE:-wiremock/wiremock:3.13.2}
+    restart: unless-stopped
+    ports:
+      - "8089:8080"
+    volumes:
+      - /opt/demo/wiremock:/home/wiremock
+
+  api:
+    image: ${API_IMAGE}
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      CORREIOS_API_BASE_URL: ${CORREIOS_API_BASE_URL}
+    depends_on:
+      - wiremock
+
+volumes:
+  hsqldb-data:

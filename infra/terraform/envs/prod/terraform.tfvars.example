@@ -1,0 +1,13 @@
+aws_region = "us-east-1"
+
+active_color = "blue"
+
+api_image_blue  = "your-dockerhub-user/api-cep:blue"
+api_image_green = "your-dockerhub-user/api-cep:green"
+
+# Restrict this to trusted ranges in real environments.
+allowed_http_cidrs = ["0.0.0.0/0"]
+
+# Prefer SSM. Set this only if you need SSH access.
+allowed_ssh_cidrs = []
+key_name          = null
