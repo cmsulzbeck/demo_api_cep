@@ -1,0 +1,37 @@
+services:
+  database:
+    image: eclipse-temurin:17-jre
+    working_dir: /app
+    volumes:
+      - ./target/dependency:/app/dependency
+      - hsqldb-data:/app/data
+    command: >
+      java -cp "/app/dependency/*"
+      org.hsqldb.server.Server
+      --database.0 file:/app/data/demo-db
+      --dbname.0 demo
+    ports:
+      - "9001:9001"
+
+  wiremock:
+    image: wiremock/wiremock:3.13.2
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./src/test/resources/wiremock:/home/wiremock
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:hsqldb:hsql://database/demo
+      SPRING_DATASOURCE_USERNAME: SA
+      SPRING_DATASOURCE_PASSWORD:
+      CORREIOS_API_BASE_URL: http://wiremock:8080
+    depends_on:
+      - database
+      - wiremock
+
+volumes:
+  hsqldb-data:

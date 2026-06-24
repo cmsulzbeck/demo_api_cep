@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -28,7 +29,7 @@ public class LogFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        int CACHE_LIMIT = 1;
+        int CACHE_LIMIT = 10000; // deve ser um valor alto, para chamadas POST não serem truncadas
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request, CACHE_LIMIT);
         ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
 
@@ -37,6 +38,12 @@ public class LogFilter extends OncePerRequestFilter {
 
             String requestData = new String(wrappedRequest.getContentAsByteArray(), StandardCharsets.UTF_8);
             String returnedData = new String(wrappedResponse.getContentAsByteArray(), StandardCharsets.UTF_8);
+
+            if (returnedData.isBlank() && wrappedResponse.getStatus() >= 400) {
+                HttpStatus status = HttpStatus.resolve(wrappedResponse.getStatus());
+
+                returnedData = status != null ? status.getReasonPhrase() : "HTTP error " + wrappedResponse.getStatus();
+            }
 
             // TODO testar se passar um ID aqui resulta em erro de inserção no banco de dados
             Log log = Log.builder()

@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/cep/00000000"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "code": "CEP_NOT_FOUND",
+      "message": "CEP was not found in the mocked external API"
+    }
+  }
+}

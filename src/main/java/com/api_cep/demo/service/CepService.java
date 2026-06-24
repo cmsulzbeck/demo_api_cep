@@ -1,12 +1,16 @@
 package com.api_cep.demo.service;
 
 import com.api_cep.demo.dto.CepDTO;
+import com.api_cep.demo.exceptions.CepServiceException;
 import com.api_cep.demo.repository.LogRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
 
 @Service
 @Slf4j
@@ -25,6 +29,15 @@ public class CepService {
         return restClient.get()
                 .uri(correiosBaseUrl + "/cep/{cep}", cep)
                 .retrieve()
+                .onStatus(HttpStatusCode::isError, (request, response) -> {
+                    String responseBody = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+
+                    throw new CepServiceException(
+                            "External CEP API returned an error",
+                            response.getStatusCode(),
+                            responseBody
+                    );
+                })
                 .body(CepDTO.class);
     }
 }
